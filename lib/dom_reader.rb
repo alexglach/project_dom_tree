@@ -11,7 +11,7 @@ class DOMReader
 
   def initialize
     @root = nil
-    @output = ''
+    @output = "<!doctype html>\n"
   end
 
 
