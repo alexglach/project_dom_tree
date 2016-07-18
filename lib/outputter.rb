@@ -1,26 +1,11 @@
-require_relative 'parser'
-require_relative 'html_loader'
-require_relative 'node_renderer'
-require_relative 'tree_searcher'
-require_relative 'outputter'
+class Outputter
 
 
-class DOMReader
-
-  attr_reader :root
-
-  def initialize
-    @root = nil
+  def initialize(root)
+    puts outputter(root)
     @output = ''
   end
 
-
-  def build_tree(path) 
-    str = HTMLLoader.new.load(path)
-    parser = Parser.new(str)
-    parser.parser_script
-    @root = parser.root
-  end
 
   def outputter(tag)
     if tag.children == []
@@ -64,20 +49,9 @@ class DOMReader
   end
 
 
+
+
+
+
+
 end
-
-d = DOMReader.new
-d.build_tree('test.html')
-
-puts d.outputter(d.root)
-# searcher = TreeSearcher.new(d.root)
-# n = NodeRenderer.new(d.root)
-# matches = searcher.search_by(:id, "test")
-# puts matches.size
-# matches = searcher.search_ancestors(d.root.children[0].children[0], :class,  "test")
-# matches.each {|node| n.render(node)}
-
-# n.render(d.root)
-
-
-
