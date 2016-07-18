@@ -66,9 +66,9 @@ d = DOMReader.new
 d.build_tree('test.html')
 searcher = TreeSearcher.new(d.root)
 n = NodeRenderer.new(d.root)
-matches = searcher.search_children(d.root, :text, "test")
+matches = searcher.search_by(:id, "test")
 puts matches.size
-# tests = searcher.search_ancestors(d.root.children[0].children[0], :class,  "test")
+# matches = searcher.search_ancestors(d.root.children[0].children[0], :class,  "test")
 matches.each {|node| n.render(node)}
 
 # n.render(d.root)
