@@ -2,7 +2,7 @@ require 'pry'
 require_relative 'html_loader'
 
 
-Tag = Struct.new(:type, :attributes, :children, :text_before, :text_after, :text, :parent, :depth)
+Tag = Struct.new(:type, :attributes, :children, :text_before, :text_after, :parent, :depth)
 
 class Tag
 
@@ -92,7 +92,6 @@ class Parser
       end
     end
     t = Tag.new(usable[/^([\w\-]+)/], tags, [], "", "")
-    t.text = t.text_before + t.text_after
     delete_tag
     t
   end
