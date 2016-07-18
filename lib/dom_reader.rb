@@ -29,13 +29,18 @@ class DOMReader
     else
       @output += ("  " * tag.depth)
       @output += "<#{tag.type} #{output_class(tag.attributes)}>\n"
-      @output += ("  " * (tag.depth + 1))
-      @output += "#{tag.text_before}\n"
+      if tag.text_before.length > 0
+        @output += ("  " * (tag.depth + 1))
+        @output += "#{tag.text_before}\n"
+      end
       tag.children.each do |child|
         outputter(child)
       end
+      if tag.text_after.length > 0
+        @output += ("  " * (tag.depth + 1)) + "#{tag.text_after}\n"
+      end
       @output += ("  " * tag.depth)
-      @output += "#{tag.text_after}</#{tag.type}>\n"
+      @output += "</#{tag.type}>\n"
     end
     @output
   end
@@ -55,8 +60,6 @@ class DOMReader
       end
     end
     output 
-
-
   end
 
 
@@ -64,12 +67,14 @@ end
 
 d = DOMReader.new
 d.build_tree('test.html')
-searcher = TreeSearcher.new(d.root)
-n = NodeRenderer.new(d.root)
-matches = searcher.search_by(:id, "test")
-puts matches.size
+
+puts d.outputter(d.root)
+# searcher = TreeSearcher.new(d.root)
+# n = NodeRenderer.new(d.root)
+# matches = searcher.search_by(:id, "test")
+# puts matches.size
 # matches = searcher.search_ancestors(d.root.children[0].children[0], :class,  "test")
-matches.each {|node| n.render(node)}
+# matches.each {|node| n.render(node)}
 
 # n.render(d.root)
 
