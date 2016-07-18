@@ -12,28 +12,7 @@ class  TreeSearcher
     attr_s = attribute.to_s
     stack = [@root]
     matches = []
-    until stack.empty?
-      if stack[0].children.length > 0
-        stack[0].children.each do |child|
-          stack << child
-        end
-      end
-      if stack[0].attributes.keys.include?(attr_s)
-        if stack[0].attributes[attr_s].is_a?Array
-          stack[0].attributes[attr_s].each do |att_value|
-            if /#{value}/ =~ att_value
-              matches << stack[0]
-            end
-          end
-        else
-          if /#{value}/ =~ stack[0].attributes[attr_s]
-            matches << stack[0]
-          end
-        end
-      end
-      stack.shift
-    end
-    matches
+    stack_compare(stack, matches, attr_s, value)
   end
 
 
@@ -46,29 +25,7 @@ class  TreeSearcher
         stack << child
       end
     end
-    until stack.empty?
-      if stack[0].children.length > 0
-        stack[0].children.each do |child|
-          stack << child
-        end
-      end
-      if stack[0].attributes.keys.include?(attr_s)
-        if stack[0].attributes[attr_s].is_a?Array
-          stack[0].attributes[attr_s].each do |att_value|
-            if value == att_value
-              matches << stack[0]
-            end
-          end
-        else
-          if stack[0].attributes[attr_s] == value
-            matches << stack[0]
-          end
-        end
-      end
-      stack.shift
-    end
-    matches
-
+    stack_compare(stack, matches, attr_s, value)
 
   end
 
@@ -102,6 +59,39 @@ class  TreeSearcher
     matches
   end
 
+
+  def stack_compare(stack, matches, attr_s, value)
+    until stack.empty?
+      if stack[0].children.length > 0
+        stack[0].children.each do |child|
+          stack << child
+        end
+      end
+
+      
+      if attr_s == "text"
+        if (stack[0].text_before + stack[0].text_after).include?(value)
+          matches << stack[0]
+        end
+      end
+      if stack[0].attributes.keys.include?(attr_s)
+        if stack[0].attributes[attr_s].is_a?Array
+          stack[0].attributes[attr_s].each do |att_value|
+            if value == att_value
+              matches << stack[0]
+            end
+          end
+        else
+
+          if stack[0].attributes[attr_s].include?(value)
+            matches << stack[0]
+          end
+        end
+      end
+      stack.shift
+    end
+    matches
+  end
 
 
 end

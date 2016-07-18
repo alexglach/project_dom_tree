@@ -4,6 +4,8 @@ class HTMLLoader
     file = File.open(path, "rb")
     str = file.read
     str.gsub(/\n/, "")
+    
+
   end
 
 

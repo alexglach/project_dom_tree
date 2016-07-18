@@ -9,6 +9,7 @@ class NodeRenderer
 
 
   def render(node=@root)
+    puts "Your criteria matches a node with type #{node.type}"
     puts "Total nodes below '#{node.type}': #{total_nodes_below(node)}"
     puts
     puts "Node Types:"
@@ -17,7 +18,7 @@ class NodeRenderer
     end
     puts
     puts "Node's data: #{node_data(node)}"
-    puts
+    puts "------------------------------------------------"
   end
 
 

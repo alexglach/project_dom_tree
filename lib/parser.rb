@@ -28,11 +28,11 @@ class Parser
     stack = []
   # get type+description of outer tags to start the root
     @root = parse_tag
-    @root.text_before = get_text
+    @root.text_before = get_text.strip
     @root.depth = 0
     stack << @root
     while stack.length > 0
-      stack.last.text_after += get_text if stack.last.text_after
+      stack.last.text_after += get_text.strip if stack.last.text_after
       if check_closing
         stack.pop
         delete_tag
@@ -44,7 +44,7 @@ class Parser
         new_tag.parent = stack.last
         new_tag.depth = stack.last.depth + 1
         stack << new_tag
-        stack.last.text_before += get_text if stack.last.text_before
+        stack.last.text_before += get_text.strip if stack.last.text_before
       end
     end
 
