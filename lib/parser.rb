@@ -1,16 +1,17 @@
 require 'pry'
+require_relative 'html_loader'
 
 
-Tag = Struct.new(:type, :attributes, :children, :text_before, :text_after, :depth)
+Tag = Struct.new(:type, :attributes, :children, :text_before, :text_after, :text, :parent, :depth)
 
 class Tag
 
   def to_s
-    "#{attributes}"
+    "#{type}, #{attributes}"
   end
 
   def inspect
-    "#{attributes}"
+    "#{type}, #{attributes}"
   end
 
 
@@ -22,10 +23,6 @@ class Parser
     @str = str
     @output = ''
   end
-
-  # def load_html
-  #   @str = File.readlines('test.html').map(&:chomp).join
-  # end
 
   def parser_script
     stack = []
@@ -44,11 +41,13 @@ class Parser
         new_tag = parse_tag
         # binding.pry
         stack.last.children << new_tag
+        new_tag.parent = stack.last
         new_tag.depth = stack.last.depth + 1
         stack << new_tag
         stack.last.text_before += get_text if stack.last.text_before
       end
     end
+
 
       # stack.last.text = get_text
 
@@ -93,6 +92,7 @@ class Parser
       end
     end
     t = Tag.new(usable[/^([\w\-]+)/], tags, [], "", "")
+    t.text = t.text_before + t.text_after
     delete_tag
     t
   end
@@ -100,30 +100,49 @@ class Parser
   def outputter(tag)
     if tag.children == []
       @output += ("  " * tag.depth)
-      @output += "<#{tag.type} #{tag.attributes}> #{tag.text_before} #{tag.text_after} </#{tag.type}>\n"
+      @output += "<#{tag.type} #{output_class(tag.attributes)}> \n #{tag.text_before} #{tag.text_after}\n" + ("  " * tag.depth) + "</#{tag.type}>\n"
       return
     else
       @output += ("  " * tag.depth)
-      @output += "<#{tag.type} #{tag.attributes}> #{tag.text_before} \n"
+      @output += "<#{tag.type} #{output_class(tag.attributes)}> \n" + ("  " * tag.depth) + "#{tag.text_before} \n"
       tag.children.each do |child|
         outputter(child)
       end
-      @output += "#{tag.text_after} </#{tag.type}>\n"
+      @output += "#{tag.text_after}\n" + ("  " * tag.depth) + "</#{tag.type}>\n"
     end
     @output
+  end
+
+  def output_class(hash)
+    output = ""
+    return output if hash.nil?
+    hash.each do |key, value|
+      if value.is_a? String
+        output += (key + "=" + "#{value}" + " ")
+      else
+        output += (key + "=" + "'")
+        value.each do |value|
+          output += value + " "
+        end
+        output[-1] = "'"
+      end
+    end
+    output 
+
+
   end
 
 
 
 end
 
-h = '<html>  <head>    <title>      This is a test page    </title>  </head>  <body>    <div class="top-div">      Im an outer div!!!      <div class="inner-div">        Im an inner div!!! I might just <em>emphasize</em> some text.      </div>      I am EVEN MORE TEXT for the SAME div!!!    </div>    <main id="main-area">      <header class="super-header">        <h1 class="emphasized">          Welcome to the test doc!        </h1>        <h2>          This document contains data        </h2>      </header>      <ul>        Here is the data:        <li>Four list items</li>        <li class="bold funky important">One unordered list</li>        <li>One h1</li>        <li>One h2</li>        <li>One header</li>        <li>One main</li>        <li>One body</li>        <li>One html</li>        <li>One title</li>        <li>One head</li>        <li>One doctype</li>        <li>Two divs</li>        <li>And infinite fun!</li>      </ul>    </main>  </body></html>'
+h = '<html class="hello" id="nope" double="yes no">  <head>    <title>      This is a test page    </title>  </head>  <body>    <div class="top-div">      Im an outer div!!!      <div class="inner-div">        Im an inner div!!! I might just <em>emphasize</em> some text.      </div>      I am EVEN MORE TEXT for the SAME div!!!    </div>    <main id="main-area">      <header class="super-header">        <h1 class="emphasized">          Welcome to the test doc!        </h1>        <h2>          This document contains data        </h2>      </header>      <ul>        Here is the data:        <li>Four list items</li>        <li class="bold funky important">One unordered list</li>        <li>One h1</li>        <li>One h2</li>        <li>One header</li>        <li>One main</li>        <li>One body</li>        <li>One html</li>        <li>One title</li>        <li>One head</li>        <li>One doctype</li>        <li>Two divs</li>        <li>And infinite fun!</li>      </ul>    </main>  </body></html>'
 
-t = Parser.new(h)
+# t = Parser.new(h)
 
-t.parser_script
+# t.parser_script
 
-puts t.outputter(t.root)
+# puts t.root.type
 #   def load_html
     # puts str = File.readlines('test.html').map(&:chomp).join
   # end
